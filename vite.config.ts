@@ -27,6 +27,7 @@ function copyPhotoDirectoriesPlugin(): Plugin {
 }
 
 export default defineConfig({
+  base: './',
   plugins: [react(), copyPhotoDirectoriesPlugin()],
   server: {
     port: 5173,

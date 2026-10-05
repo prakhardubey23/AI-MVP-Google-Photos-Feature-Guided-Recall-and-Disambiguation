@@ -13,20 +13,33 @@
   <body>
     <div id="root"></div>
     <script>
-      // Automatically communicate height to Streamlit Component iframe
+      // Automatically communicate readiness and height to Streamlit Component iframe
       function notifyStreamlit() {
         if (window.parent && window.parent !== window) {
           window.parent.postMessage({
             isStreamlitMessage: true,
+            type: "streamlit:componentReady",
+            apiVersion: 1
+          }, "*");
+          window.parent.postMessage({
+            isStreamlitMessage: true,
             type: "streamlit:setFrameHeight",
-            height: Math.max(document.documentElement.scrollHeight, 940)
+            height: Math.max(document.documentElement.scrollHeight, 960)
           }, "*");
         }
       }
+      window.addEventListener("message", function(event) {
+        if (event.data && (event.data.type === "streamlit:render" || event.data.isStreamlitMessage)) {
+          notifyStreamlit();
+        }
+      });
+      notifyStreamlit();
+      window.addEventListener("DOMContentLoaded", notifyStreamlit);
       window.addEventListener("load", notifyStreamlit);
       window.addEventListener("resize", notifyStreamlit);
-      setTimeout(notifyStreamlit, 400);
-      setTimeout(notifyStreamlit, 1200);
+      setTimeout(notifyStreamlit, 200);
+      setTimeout(notifyStreamlit, 600);
+      setTimeout(notifyStreamlit, 1500);
       setTimeout(notifyStreamlit, 3000);
     </script>
     <script type="module" src="/src/main.tsx"></script>

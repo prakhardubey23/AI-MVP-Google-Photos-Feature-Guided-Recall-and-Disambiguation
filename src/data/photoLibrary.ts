@@ -1,6 +1,6 @@
 import { PhotoRecord } from '../types/photo';
 
-export const PHOTO_LIBRARY: PhotoRecord[] = [
+const RAW_PHOTO_LIBRARY: PhotoRecord[] = [
   // =========================================================================
   // 1. 201412_a: Heritage Architecture & Coastal Landscape (Dec 2014)
   // =========================================================================
@@ -2049,3 +2049,9 @@ export const PHOTO_LIBRARY: PhotoRecord[] = [
     memoryStory: 'Unforgettable childhood adventure riding a decorated yak by the freezing waters of Tsomgo Lake in Sikkim.'
   }
 ];
+
+export const PHOTO_LIBRARY: PhotoRecord[] = RAW_PHOTO_LIBRARY.map((p) => ({
+  ...p,
+  url: p.url.startsWith('/') ? '.' + p.url : p.url,
+}));
+

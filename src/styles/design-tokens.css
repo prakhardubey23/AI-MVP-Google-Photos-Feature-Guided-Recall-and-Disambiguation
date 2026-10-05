@@ -1,0 +1,78 @@
+:root {
+  /* Google & iOS Color Palette */
+  --gp-blue: #1a73e8;
+  --gp-blue-hover: #1557b0;
+  --gp-blue-subtle: #e8f0fe;
+  --gp-blue-border: #8ab4f8;
+  --gp-gemini-gradient: linear-gradient(135deg, #1a73e8 0%, #8ab4f8 40%, #c58af9 75%, #f28b82 100%);
+  --gp-gemini-glow: rgba(138, 180, 248, 0.35);
+
+  --gp-bg: #ffffff;
+  --gp-surface: #f8f9fa;
+  --gp-surface-variant: #f1f3f4;
+  --gp-surface-elevated: #ffffff;
+  --gp-surface-glass: rgba(255, 255, 255, 0.82);
+
+  --gp-text-primary: #202124;
+  --gp-text-secondary: #5f6368;
+  --gp-text-tertiary: #80868b;
+  --gp-text-inverse: #ffffff;
+
+  --gp-border: #dadce0;
+  --gp-border-light: #e8eaed;
+  --gp-divider: #f1f3f4;
+
+  --gp-chip-bg: #f1f3f4;
+  --gp-chip-active-bg: #e8f0fe;
+  --gp-chip-active-text: #1a73e8;
+  --gp-chip-active-border: #1a73e8;
+
+  --gp-danger: #ea4335;
+  --gp-warning: #f9ab00;
+  --gp-success: #34a853;
+
+  /* iPhone Shell Metrics */
+  --phone-width: 393px;
+  --phone-height: 852px;
+  --phone-radius: 54px;
+  --phone-bezel: 12px;
+  --dynamic-island-width: 124px;
+  --dynamic-island-height: 35px;
+  --dynamic-island-radius: 20px;
+
+  /* Typography */
+  --font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', Roboto, sans-serif;
+  
+  /* Shadows & Elevation */
+  --shadow-sm: 0 1px 3px rgba(60, 64, 67, 0.12), 0 1px 2px rgba(60, 64, 67, 0.08);
+  --shadow-md: 0 4px 8px 3px rgba(60, 64, 67, 0.1), 0 1px 3px rgba(60, 64, 67, 0.15);
+  --shadow-lg: 0 8px 24px rgba(60, 64, 67, 0.16);
+  --shadow-device: 0 25px 60px -15px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.08);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-standard: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] {
+  --gp-bg: #0e0e0e;
+  --gp-surface: #171717;
+  --gp-surface-variant: #222222;
+  --gp-surface-elevated: #1f1f1f;
+  --gp-surface-glass: rgba(23, 23, 23, 0.85);
+
+  --gp-text-primary: #e8eaed;
+  --gp-text-secondary: #9aa0a6;
+  --gp-text-tertiary: #5f6368;
+  --gp-text-inverse: #121212;
+
+  --gp-border: #3c4043;
+  --gp-border-light: #2d3033;
+  --gp-divider: #282a2d;
+
+  --gp-chip-bg: #282a2d;
+  --gp-chip-active-bg: #1c355e;
+  --gp-chip-active-text: #8ab4f8;
+  --gp-chip-active-border: #8ab4f8;
+}

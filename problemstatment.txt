@@ -1,0 +1,420 @@
+# PROJECT CONTEXT
+Google Photos currently provides two primary search experiences:
+1. **Classic Search** — a fast search experience that primarily uses keywords and available photo metadata to retrieve matching photos and videos.
+2. **Ask Photos** — an AI-powered search experience using Gemini that allows users to search their photo library using more natural, conversational, and complex prompts. Ask Photos can interpret user intent and provide summaries alongside relevant photo results.
+Despite these capabilities, retrieving a specific older photo can still become difficult when the user's memory is incomplete.
+Users with accumulated, multi-year photo libraries often remember a photo through **partial contextual clues** rather than precise information. For example, they may remember:
+- an event — "our Goa trip";
+- a life phase — "when I was in college";
+- people — "with my college friends";
+- a place — "some beach in Goa";
+- an approximate period — "around 2016";
+- a visual detail — "we were sitting near the water";
+while not remembering the exact date, album, location, or search terms required to retrieve the photo.
+This creates two important retrieval problems.
+## Problem 1 — Initial Retrieval Failure / Insufficient Narrowing
+The user's initial memory description may not be precise enough to surface a sufficiently relevant candidate set.
+For example:
+> "That photo from my Goa trip during college."
+The query contains meaningful information, but it may still correspond to a large number of photos.
+The user therefore needs help converting incomplete memory into additional, useful retrieval constraints.
+
+## Problem 2 — Result Overload and Photo Identification
+Even when the correct event, time period, people, or location has been retrieved, the user may still face a large number of similar candidate photos.
+For example, a Goa trip may contain dozens of:
+- beach photos;
+- photos with the same people;
+- burst-like sequences;
+- visually similar group photos;
+- photos taken only seconds apart.
+The intended photo may therefore already exist within the returned results but still be difficult to identify.
+When either of these problems occurs, users may compensate by:
+- reformulating the search multiple times;
+- manually scrolling through the timeline;
+- browsing albums;
+- adding different keywords;
+- inspecting individual photos one by one;
+- eventually abandoning the retrieval journey.
+
+The product opportunity is therefore not simply to improve search accuracy.
+
+The opportunity is to help users **progressively convert incomplete memory into a smaller, more useful candidate set and then identify the exact photo they remember.**
+
+# PROBLEM STATEMENT
+Build a functional Minimum Viable Product (MVP) that demonstrates how vague-memory photo retrieval could be improved inside a realistic Google Photos App experience.
+
+The MVP should visually resemble the **Google Photos app running on an iPhone**, rather than appearing as a generic search prototype or standalone AI application.
+The existing Google Photos-like product experience should act as the shell within which the new retrieval capabilities are introduced.
+The MVP will introduce two connected features:
+## Feature 1 — Guided Search Refinement
+When the initial search does not sufficiently narrow the candidate set, the system should help the user determine what additional information could meaningfully improve the search.
+Instead of forcing the user to repeatedly create new search queries from scratch, the system should provide contextual refinement options based on:
+- the user's original query;
+- clues already provided;
+- attributes present in the retrieved candidate set;
+- useful distinctions that could reduce the search space.
+
+For example:
+User searches:
+> "Goa trip during college with friends"
+
+Initial result:
+> 80 candidate photos
+
+The system could then help the user refine using distinctions such as:
+- Beach
+- Restaurant
+- Hotel
+- Day
+- Night
+- Specific people
+- Approximate year
+- Activity
+After the user selects or supplies another clue, the candidate set should genuinely update.
+
+Example:
+`80 Goa photos`
+→ **Beach**
+`32 photos`
+→ **Rahul + Aman**
+`9 photos`
+→ **Evening**
+`3 photos`
+
+→ **User identifies and opens the intended photo**
+
+The purpose of refinement is not merely to provide additional filters.
+
+The feature should help users **progressively eliminate irrelevant candidates until the intended photo becomes easy to identify.**
+
+---
+## Feature 2 — Smart Result Grouping & Disambiguation
+### What it does
+When a search returns a large number of relevant but similar photos, Google Photos should avoid presenting them as one long, undifferentiated grid.
+
+Instead, the system should automatically organize the candidate set into meaningful groups based on attributes that can help the user distinguish between photos.
+
+For example, a search for:
+> "Goa trip during college"
+
+might return:
+
+### Goa Trip · 2016
+
+- **Beach — 21 photos**
+- **Restaurants — 12 photos**
+- **Night — 16 photos**
+- **Rahul — 18 photos**
+- **Selfies — 9 photos**
+
+The grouping dimensions should be generated from the actual characteristics of the returned photo set and may include:
+
+- scene or activity;
+- people present;
+- location;
+- time of day;
+- sub-events;
+- visual similarity;
+- burst or near-duplicate photos.
+
+The user can select a group to progressively narrow the candidate set instead of inspecting every photo individually.
+
+For example:
+
+`76 candidate photos`
+
+→ **Beach**
+
+`21 photos`
+
+→ **Rahul**
+
+`7 photos`
+
+→ **Night**
+
+`3 photos`
+
+→ **Intended photo identified**
+
+The goal is not only to reduce the number of photos shown, but to make the remaining candidate set easier to understand and distinguish.
+
+### Problem solved
+
+This feature primarily addresses **Result Overload and Photo Identification Failure**.
+
+Even when the intended photo has already been retrieved, users may struggle to find it because:
+
+- too many candidates are shown;
+- several photos come from the same event;
+- the same people appear repeatedly;
+- many photos look visually similar;
+- burst-style images are shown separately.
+
+Smart Result Grouping reduces the need for:
+
+- excessive scrolling;
+- photo-by-photo inspection;
+- repeated query reformulation;
+- abandoning the retrieval journey.
+
+
+# MVP PRODUCT BEHAVIOUR
+The intended end-to-end experience is:
+**Incomplete memory**
+→ User describes what they remember
+→ System interprets memory clues
+→ Candidate photos are retrieved
+→ User checks whether the intended photo is identifiable
+→ If not, system suggests meaningful refinement options
+→ User adds/selects another clue
+→ Candidate set becomes narrower or more useful
+→ Refinement continues only when needed
+→ User identifies and opens/selects the intended photo
+
+The two features must operate as one connected retrieval journey rather than as separate demonstrations.
+
+---
+
+# TECHNICAL PRODUCT PRINCIPLE
+The system should intelligently retrieve and refine photos by combining:
+
+**Natural-language user input**
++
+**Structured photo data**
++
+**Semantic/photo-derived information**
++
+**LLM-assisted interpretation**
+→
+**Relevant candidate photos**
+→
+**Progressive refinement**
+→
+**Intended photo**
+
+The LLM should primarily be responsible for understanding user intent and helping determine useful refinement dimensions.
+The actual photo retrieval must remain grounded in the indexed photo corpus and its associated metadata/features.
+The MVP should not behave like a chatbot that simply generates an answer claiming that a photo was found.
+
+# GOOGLE PHOTOS UI INTEGRATION REQUIREMENT
+
+The MVP must visually and functionally behave as though the new features exist **inside the real Google Photos iPhone app**, specifically within the **Search** experience.
+
+The MVP should NOT present:
+
+- a separate chatbot;
+- a standalone search website;
+- a generic image retrieval dashboard;
+- a prototype with unrelated navigation;
+- a custom UI that only loosely resembles Google Photos.
+
+The base interface should closely recreate the current Google Photos iOS visual language, including:
+
+- the Google Photos-style bottom navigation;
+- the **Photos**, **Collections**, **Create**, and **Search** navigation items;
+- the photo catalogue / gallery layout – the photo catalogue will have images which I will load in the project folder
+- Google Photos-style spacing, typography, cards, icons, search surfaces, chips, and interaction hierarchy;
+- mobile-first iPhone proportions and interaction patterns.
+
+The two MVP features must be introduced specifically inside the **Search** tab.
+
+The expected experience should feel like:
+
+> Existing Google Photos Search + new vague-memory retrieval assistance
+
+and not:
+
+> A new application inspired by Google Photos.
+
+The visual objective is that a reviewer should immediately recognize the interface as a realistic Google Photos-on-iPhone experience with additional search functionality layered into it.
+Do not redesign the entire app.
+Recreate only the screens and states required to demonstrate the MVP journey convincingly.
+
+# SEARCH TAB EXPERIENCE
+The **Search** tab is the primary entry point for the MVP.
+When the user opens Search, the interface should retain the familiar Google Photos-like Search experience and introduce the MVP capabilities naturally within it.
+The user should be able to enter a natural-language memory query such as:
+> "That Goa beach photo from college with Rahul."
+The Search experience then performs the following:
+
+1. Interpret the user's query.
+2. Determine whether the request is relevant to photo retrieval.
+3. Search only within the indexed MVP photo library.
+4. Return relevant candidate photos where available.
+5. If results are broad, activate Guided Search Refinement.
+6. If many similar candidates remain, activate Smart Result Grouping & Disambiguation.
+7. Allow the user to progressively narrow results.
+8. Allow the user to open/select the intended photo.
+The refinement and grouping experience must remain visually embedded inside Google Photos Search.
+Do not move the user into a separate AI assistant screen unless a Google Photos-like conversational state is being intentionally reproduced.
+
+# MVP PHOTO LIBRARY — AUTHORITATIVE DATA SOURCE
+
+For this MVP, the photo library supplied inside the project folder is the **only authoritative photo corpus**.
+Antigravity and all AI/LLM components must use this supplied library as the source of truth for photo retrieval.
+
+The system must NOT:
+- search the public internet for images;
+- retrieve arbitrary stock images;
+- generate substitute images;
+- pretend that photos exist when they do not;
+- assume access to the user's real Google Photos account;
+- use unrelated images outside the supplied project library.
+All search, retrieval, grouping, refinement and result presentation must operate against the supplied project photo library.
+The architecture should later determine how the library is indexed, but conceptually the system should derive and/or maintain searchable information such as:
+
+- image file/path;
+- capture date where available;
+- location where available;
+- people labels where supplied or derived;
+- event/context labels;
+- objects;
+- scenes;
+- activities;
+- OCR/text where relevant;
+- visual similarity;
+- embeddings or semantic representations where appropriate.
+
+Any derived information must remain traceable to the supplied photo corpus.
+The LLM may interpret the user's request, but it must never invent photo content that is not supported by the indexed library.
+
+# QUERY RELEVANCE AND FALLBACK BEHAVIOUR
+The Search experience must handle three major query states:
+## State A — Relevant Photo-Retrieval Query With Results
+Example:
+> "Show me the beach photos from the Goa trip."
+If matching photos exist in the supplied MVP library:
+- retrieve and display the relevant candidates;
+- use refinement/grouping where useful;
+- allow the user to continue toward the intended photo.
+
+---
+
+## State B — Query Is Not Related to Photo Retrieval
+Example:
+> "Who is the Prime Minister of India?"
+or
+> "Write an email to my manager."
+The system should NOT attempt to answer the unrelated question.
+Instead, the Search experience should respond in a concise, product-appropriate way explaining that this MVP is designed only for retrieving photos from the available photo library.
+
+Example response:
+
+> **I can help you find photos from this library. Try describing a memory, person, place, event, object or approximate time.**
+
+Then present clickable suggested queries based on the actual supplied photo library.
+
+For example:
+
+- "Show me photos from the Goa trip"
+- "Find beach photos with Rahul"
+- "Show me night-time photos from the trip"
+These example suggestions are illustrative only.
+The implemented suggestions must be generated from content that genuinely exists in the supplied project photo library.
+Do not show suggestions that would return no photos.
+---
+
+## State C — Relevant Photo Query, But No Matching Photo Exists
+Example:
+> "Show me my Eiffel Tower photos."
+If there are no matching Eiffel Tower photos in the supplied MVP library, the system must NOT fabricate results.
+Instead, clearly communicate that no matching photo was found in the current MVP library.
+The message should explain that the MVP currently uses a limited demo photo corpus.
+
+Example:
+> **I couldn't find a matching photo in the current library. This MVP uses a smaller demo photo collection for now and can support a larger library in a future version.**
+
+Then provide several clickable alternative searches that are guaranteed to have results in the supplied photo library.
+
+For example:
+> **Try one of these instead:**
+> - Goa trip photos
+> - Beach photos with Rahul
+> - Night photos from the trip
+
+The exact alternatives must be grounded in the indexed library.
+Do NOT hardcode unrelated suggestions if the supplied library changes.
+---
+## State D — Relevant Query Is Too Broad or Ambiguous
+Example:
+> "Show me that photo with my friends."
+The query is relevant, but it may match too many photos.
+The system should not immediately return an overwhelming grid if meaningful refinement is possible.
+Instead, it should:
+1. retrieve an initial candidate set;
+2. recognize that the set is broad;
+3. display candidate photos;
+4. surface useful refinement options derived from the result set.
+
+For example:
+> **Can you narrow it down?**
+Suggested refinements might include:
+
+- Goa Trip
+- Beach
+- Rahul
+- Night
+- Selfies	
+Selecting a refinement must genuinely update the candidate set.
+
+# SMART SUGGESTION REQUIREMENT
+All suggested searches, refinement chips, categories and recovery prompts must be grounded in the actual indexed MVP library.
+
+The system should preferentially suggest options that:
+
+- exist in the current photo corpus;
+- are likely to return at least one result;
+- meaningfully distinguish between candidate groups;
+- help demonstrate the MVP's retrieval capabilities.
+
+The LLM must not freely invent suggestions.
+A suggestion should be generated only if the underlying retrieval/index layer can verify that it maps to available photo content.
+
+# LLM RESPONSIBILITY VS RETRIEVAL RESPONSIBILITY
+The LLM is responsible for tasks such as:
+- determining whether the user's request concerns photo retrieval;
+- interpreting vague-memory language;
+- extracting contextual clues;
+- generating natural-language responses;
+- proposing useful refinement language;
+- summarizing why a search returned no result.
+
+The LLM is NOT the source of truth for what photos exist.
+The indexed MVP photo library is the source of truth.
+The retrieval layer must determine:
+- whether matching photos exist;
+- which photos match;
+- candidate counts;
+- which grouping attributes exist;
+- which refinement options are valid.
+
+The recommended flow is:
+
+User query
+→ LLM interprets query
+→ structured retrieval request
+→ search against indexed project photo library
+→ retrieval result
+→ LLM/UI converts the result into a user-friendly response
+
+Never use:
+User query
+→ LLM guesses what photos probably exist
+→ fabricated result
+
+# ADDITIONAL MVP ACCEPTANCE CRITERIA
+
+The MVP is not complete unless all of the following work:
+
+1. The user can open the Search tab inside a realistic Google Photos-on-iPhone interface.
+2. A valid vague-memory photo query searches the supplied project photo library.
+3. Matching photos displayed in the UI correspond to actual files from that library.
+4. Guided Search Refinement works inside the Search experience.
+5. Smart Result Grouping works inside the Search experience.
+6. Refinement selections genuinely change the displayed candidate set.
+7. An unrelated non-photo query is rejected gracefully.
+8. A valid photo query with no matching image produces a truthful no-result response.
+9. The no-result state provides clickable alternative queries grounded in photos that actually exist.
+10. The app never displays fabricated photos or claims that non existent photos were found.
+11. The MVP continues to resemble Google Photos on iPhone throughout the full search and refinement flow.
